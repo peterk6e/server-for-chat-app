@@ -1,7 +1,9 @@
 const { connect } = require("getStream");
 const bcrypt = require("bcrypt");
-const StreamChat = require("Stream-chat");
+const StreamChat = require("Stream-chat").StreamChat;
 const crypto = require("crypto");
+
+require('dotenv').config()
 
 const api_key = process.env.STREAM_API_KEY;
 const api_secret = process.env.STREAM_API_SECRET;
