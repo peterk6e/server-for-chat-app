@@ -1,21 +1,50 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
-const authRoutes = require("./routes/auth.js")
+const authRoutes = require("./routes/auth.js");
 
 const app = express();
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 
-require('dotenv').config()
+require("dotenv").config();
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioClient = require("twilio")(accountSid, authToken);
+const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
 
 app.use(cors());
-app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.json());
+app.use(express.urlencoded());
 
-app.get('/', (req, res) => {
-    res.send('HW')
+app.get("/", (req, res) => {
+  res.send("HW");
 });
 
-app.use('/auth', authRoutes)
+//Twilio, sending messages
+app.post("/", (req, res) => {
+  const { message, user: sender, type, members } = req.body;
+
+  if (type === "message.new") {
+    members
+      .filter((member) => member.user_id !== sender.id)
+      .forEach(({ user }) => {
+        if (!user.online) {
+          twilioClient.messages
+            .create({
+              body: `You have a new message from ${message.user.fullName} - ${message.text}`,
+              messagingServiceSid: messagingServiceSid,
+              to: user.phoneNumber,
+            })
+            .then(() => console.log("message sent!"))
+            .catch((err) => console.log(err));
+        }
+      });
+    return res.status(200).send("Message received");
+  }
+  return res.status(200).send("Not a new Message request");
+});
+
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
