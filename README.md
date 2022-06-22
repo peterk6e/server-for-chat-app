@@ -15,9 +15,3 @@ The server uses web application framework Express (Node.js).
 Deployed with Heroku  
 
 here is the react repo for the client side: [client repo](https://github.com/peterk6e/client-for-chat-app).  
-
-<div align="center">
-  
-  <img src="https://github.com/peterk6e/client-for-chat-app/blob/master/.github/capture.jpg" width="479" height="243">
-
-</div>
